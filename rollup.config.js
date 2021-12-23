@@ -21,7 +21,9 @@ export default {
     }
   },
   plugins: [
-    replace({'Reflect.decorate': 'undefined'}),
+    replace({'Reflect.decorate': 'undefined',
+    'process.env.NODE_ENV': JSON.stringify('production')
+    }),
     resolve(),
     terser({
       ecma: 2017,
