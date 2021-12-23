@@ -13,8 +13,8 @@ const MyElement = litHaunted(() => {
     return html`
     <div>
       <my-store-counter></my-store-counter>
-      <my-store-counter></my-store-counter>
-      <my-todo-list></my-todo-list>
+      <!-- <my-store-counter></my-store-counter>
+      <my-todo-list></my-todo-list> -->
     </div>        
     `;  
   }

@@ -4,7 +4,7 @@ export default (mapStateToProps, mapDispatchToProps) => UnconnectedComponent =>
   class extends UnconnectedComponent {
     static get properties() {
       // Declare all properties previously defined in 'mapStateToProps'
-      const componentStore = mapStateToProps(store.getState());
+      const componentStore = mapStateToProps(store.getState(), this);
       return Object.entries(componentStore).reduce((accumulator, [key]) => {
         return { ...accumulator, [key]: {} };
       }, {});
@@ -13,8 +13,10 @@ export default (mapStateToProps, mapDispatchToProps) => UnconnectedComponent =>
     constructor() {
       super();
 
+      this.stateChangedFlag = false;
+
       // Initialize previously defined variables in the component
-      const componentStore = mapStateToProps(store.getState());
+      const componentStore = mapStateToProps(store.getState(), this);
       Object.entries(componentStore).forEach(([key, value]) => {
         this[key] = value;
       });
@@ -45,6 +47,17 @@ export default (mapStateToProps, mapDispatchToProps) => UnconnectedComponent =>
       }
     }
 
+    willUpdate(){      
+      if(!this.stateChangedFlag){
+        console.log('willUpdate')
+        const componentStore = mapStateToProps(store.getState(), this);
+        Object.entries(componentStore).forEach(([key, value]) => {
+          this[key] = value;
+        });                
+      }
+      this.stateChangedFlag = false;
+    }
+
     connectedCallback() {
       if (super.connectedCallback) {
         super.connectedCallback();
@@ -66,9 +79,12 @@ export default (mapStateToProps, mapDispatchToProps) => UnconnectedComponent =>
 
     // Update properties when store is updated
     stateChanged() {
-      const componentStore = mapStateToProps(store.getState());
+      console.log('stateChanged')
+      const componentStore = mapStateToProps(store.getState(), this);
       Object.entries(componentStore).forEach(([key, value]) => {
         this[key] = value;
       });
+
+      this.stateChangedFlag = true;
     }
   };

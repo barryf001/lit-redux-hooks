@@ -1,60 +1,44 @@
 import { LitElement, html } from 'lit-element';
-import { connect } from 'pwa-helpers';
-import store from '../store/store';
+import connect  from '../store/connect';
+//import store from '../store/store';
 import { increment, decrement, incrementMagnifier } from '../services/counter'
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    count: state.counter.value * state.counter.magnify
+    product: state.counter.value * ownProps.test,
+    count: state.counter.value,
+    test: ownProps.test || 1
   }
 }
 
-class StoreCounter extends connect(store)(LitElement){
+const mapDispatchToProps = (dispatch) => ({
+   increment: () => dispatch(increment()),
+   decrement: () => dispatch(decrement()),
+   magnify: () => dispatch(incrementMagnifier())
+});
 
-  static get properties() {
-    return {
-      count: { type: Number }
-      //magnifier: { type: Number }
-    }
-  }
+class StoreCounter extends connect(mapStateToProps, mapDispatchToProps)(LitElement){
 
-  constructor(){
-    super()
-    this.count = 0;
-    this.name = "StoreCounter";
-    //this.magnifier = 10;
-  }
-
-  update(newProps){
-    super.update();
-    console.log('name:' + this.name + ':update:'+ JSON.stringify(newProps))
-
-    const state = store.getState();
-    const newState = mapStateToProps(state, this);
-    Object.entries(newState).forEach(([key, value]) => {
-       this[key] = value
-    })
-  }
-
-  stateChanged(state){
-    console.log('name:' + this.name +':stateChanged:'+ JSON.stringify(state))
-    const newState = mapStateToProps(state, this);
-    Object.entries(newState).forEach(([key, value]) => {
-      this[key] = value
-    })
-    //this.count = state.counter.value;
-  }
+//  static get properties() {
+//    return {
+      //Store variable
+      //count: { type: Number },
+      //Component variable
+      //test: { type: Number }
+//    }
+//  }
 
   render(){
 
     return html`
-    <button type="button" @click=${() => { store.dispatch(increment())}}>Increment</button>
-    <button type="button" @click=${() => { store.dispatch(decrement())}}>Decrement</button>
-    <button type="button" @click=${() => { store.dispatch(incrementMagnifier())}}>Magnify</button>
-    <p><strong>Count:</strong> ${this.count}</p>
+    <span>Test:${this.test}</span>
+    <span>Counter:${this.count}</span>    
+    <button type="button" @click=${this.increment}>Increment</button>
+    <button type="button" @click=${this.decrement}>Decrement</button>
+    <button type="button" @click=${() => { console.log('test'); this.test = this.test + 1 }}>Test</button>
+    <p><strong>Product:</strong> ${this.product}</p>
   `;
   }
-
 }
 
 window.customElements.define('my-store-counter', StoreCounter);
